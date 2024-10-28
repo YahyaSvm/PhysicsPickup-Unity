@@ -18,6 +18,8 @@ public class PhysicsPickup : MonoBehaviour
     private bool isHolding = false;
 
     public bool allowVerticalMovement = false; // Allow vertical movement
+    public bool useTagFilter = false; // Checkbox for tag filtering
+    public string[] tagsToPickup; // Array to store tags
 
     void Update()
     {
@@ -89,6 +91,10 @@ public class PhysicsPickup : MonoBehaviour
         if (hitInfo.rigidbody == null)
             return;
 
+        // Tag filtering
+        if (useTagFilter && !IsTagged(hitInfo.collider.gameObject))
+            return;
+
         curBody = hitInfo.rigidbody;
         curBody.useGravity = false;
         curObject = hitInfo.rigidbody.gameObject;
@@ -131,4 +137,15 @@ public class PhysicsPickup : MonoBehaviour
         Quaternion targetRotation = Quaternion.LookRotation(cameraForward);
         transform.rotation = targetRotation; // Lock player rotation
     }
+
+    private bool IsTagged(GameObject obj)
+    {
+        foreach (string tag in tagsToPickup)
+        {
+            if (obj.CompareTag(tag))
+                return true;
+        }
+        return false;
+    }
 }
+
